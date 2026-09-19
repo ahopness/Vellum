@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import FormField from '$lib/components/FormField.svelte';
 	import CertificatePicker from '$lib/components/CertificatePicker.svelte';
-	import { EDITORIAL_THEMES, getContrastTextColor } from '$lib/utils/colors';
+	import { EDITORIAL_THEMES } from '$lib/utils/colors';
 	import type { CertConfig } from '$lib/utils/certificate';
 
 	let { form } = $props();
@@ -23,8 +23,9 @@
 	let description = $state('');
 	let startsAt = $state(startIsoDefault);
 	let endsAt = $state(endIsoDefault);
-	let themeColor = $state('#3f3f46');
+	let themeColor = $state('#2563eb'); // Azul Cobalto Vibrante padrão
 	let certTemplateData = $state('');
+	let logoPreview = $state<string | null>(null);
 	let loading = $state(false);
 
 	let certConfig = $state<CertConfig>({
@@ -41,6 +42,26 @@
 			certTemplateData = templateDataUrl;
 		}
 	}
+
+	function handleLogoChange(e: Event) {
+		const input = e.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (ev) => {
+				logoPreview = ev.target?.result as string;
+			};
+			reader.readAsDataURL(file);
+		} else {
+			logoPreview = null;
+		}
+	}
+
+	function removeLogo() {
+		logoPreview = null;
+		const input = document.getElementById('event-logo-input') as HTMLInputElement;
+		if (input) input.value = '';
+	}
 </script>
 
 <div class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 space-y-12">
@@ -50,11 +71,14 @@
 				← Meus Eventos
 			</a>
 		</div>
-		<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
-			Cadastrar Novo Evento
-		</h1>
+		<div class="flex items-center space-x-3">
+			<img src="/icons/icon_pen.png" alt="" class="w-6 h-6 object-contain" />
+			<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
+				Cadastrar Novo Evento
+			</h1>
+		</div>
 		<p class="font-sans text-sm text-[#71717a]">
-			Configure os dados da atividade, defina a identidade temática e ajuste as coordenadas do certificado.
+			Configure os dados da atividade, logo institucional, paleta temática e ajuste as coordenadas do certificado.
 		</p>
 	</header>
 
@@ -66,6 +90,7 @@
 
 	<form
 		method="POST"
+		enctype="multipart/form-data"
 		use:enhance={() => {
 			loading = true;
 			return async ({ update }) => {
@@ -75,13 +100,61 @@
 		}}
 		class="space-y-12"
 	>
-		<!-- 1. Informações Básicas -->
+		<!-- 1. Informações Básicas e Logo -->
 		<section class="space-y-6">
-			<h2 class="font-serif text-xl font-medium text-[#18181b] border-b border-[#e4e4e7] pb-2">
-				1. Informações Gerais
-			</h2>
+			<div class="flex items-center space-x-2 border-b border-[#e4e4e7] pb-2">
+				<img src="/icons/icon_desk.png" alt="" class="w-4 h-4 object-contain" />
+				<h2 class="font-serif text-xl font-medium text-[#18181b]">
+					1. Informações Gerais & Logo
+				</h2>
+			</div>
 
-			<div class="space-y-4">
+			<div class="space-y-5">
+				<!-- Upload de Logo com R2 -->
+				<div class="space-y-2 p-4 border border-[#e4e4e7] bg-white">
+					<span class="block text-xs uppercase tracking-wider text-[#71717a] font-sans font-medium">
+						Logo do Evento / Instituição (Salvo no R2)
+					</span>
+
+					<div class="flex flex-wrap items-center gap-4">
+						{#if logoPreview}
+							<div class="relative w-16 h-16 border border-[#d4d4d8] bg-[#fafafa] flex items-center justify-center p-1">
+								<img src={logoPreview} alt="Prévia da Logo" class="max-w-full max-h-full object-contain" />
+							</div>
+						{/if}
+
+						<label
+							for="event-logo-input"
+							class="cursor-pointer inline-flex items-center space-x-2 px-4 h-11 text-xs uppercase tracking-wider font-medium border border-[#18181b] bg-white text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors"
+						>
+							<img src="/icons/icon_file.png" alt="" class="w-3.5 h-3.5 object-contain" />
+							<span>{logoPreview ? 'Trocar Imagem da Logo' : 'Adicionar Logo ao Evento'}</span>
+						</label>
+
+						<input
+							id="event-logo-input"
+							name="logo"
+							type="file"
+							accept="image/png,image/jpeg,image/svg+xml,image/webp"
+							onchange={handleLogoChange}
+							class="hidden"
+						/>
+
+						{#if logoPreview}
+							<button
+								type="button"
+								onclick={removeLogo}
+								class="text-xs uppercase tracking-wider text-red-600 hover:underline font-mono"
+							>
+								Remover
+							</button>
+						{/if}
+					</div>
+					<p class="text-[11px] text-[#a1a1aa] font-sans">
+						PNG, SVG ou JPEG transparente. A logo será exibida no cabeçalho da página pública do participante e no painel.
+					</p>
+				</div>
+
 				<FormField
 					label="Título do Evento ou Aula"
 					name="title"
@@ -97,7 +170,7 @@
 					placeholder="ex: Auditório Principal, Bloco B - 4 horas de carga horária"
 				/>
 
-				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
 					<FormField
 						label="Início do Evento"
 						name="starts_at"
@@ -119,38 +192,41 @@
 			</div>
 		</section>
 
-		<!-- 2. Cor Temática Editorial -->
+		<!-- 2. Cor Temática Editorial Expandida & Vibrante -->
 		<section class="space-y-6">
-			<h2 class="font-serif text-xl font-medium text-[#18181b] border-b border-[#e4e4e7] pb-2">
-				2. Cor Temática do Evento
-			</h2>
+			<div class="flex items-center space-x-2 border-b border-[#e4e4e7] pb-2">
+				<img src="/icons/icon_light_on.png" alt="" class="w-4 h-4 object-contain" />
+				<h2 class="font-serif text-xl font-medium text-[#18181b]">
+					2. Cor Temática do Evento
+				</h2>
+			</div>
 
-			<p class="text-xs text-[#71717a] font-sans">
-				Esta cor personalizará a fita de destaque editorial, os botões e os focos de formulário na tela do participante.
+			<p class="text-xs text-[#71717a] font-sans leading-relaxed">
+				Selecione uma tonalidade da nossa paleta ampliada ou digite o código Hex. Esta cor conduzirá os botões, mira do certificado e linha de destaque da atividade.
 			</p>
 
 			<div class="space-y-4">
-				<div class="flex flex-wrap gap-3">
+				<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
 					{#each EDITORIAL_THEMES as theme}
 						<button
 							type="button"
 							onclick={() => (themeColor = theme.hex)}
-							class="flex items-center space-x-2 px-3 py-2 border text-xs font-mono transition-all {themeColor === theme.hex
-								? 'border-[#18181b] ring-1 ring-[#18181b] bg-white font-medium'
-								: 'border-[#e4e4e7] bg-white text-[#71717a] hover:border-[#a1a1aa]'}"
+							class="flex items-center space-x-2 p-2 border text-[11px] font-mono transition-all text-left {themeColor.toLowerCase() === theme.hex.toLowerCase()
+								? 'border-[#18181b] ring-2 ring-[#18181b] bg-white font-medium shadow-xs'
+								: 'border-[#e4e4e7] bg-white text-[#52525b] hover:border-[#a1a1aa]'}"
 						>
-							<span class="w-3.5 h-3.5 inline-block" style="background-color: {theme.hex};"></span>
-							<span>{theme.name}</span>
+							<span class="w-3.5 h-3.5 shrink-0 rounded-xs" style="background-color: {theme.hex};"></span>
+							<span class="truncate">{theme.name}</span>
 						</button>
 					{/each}
 				</div>
 
-				<div class="flex items-center space-x-3 pt-2">
-					<span class="text-xs text-[#71717a] font-mono">Hex personalizado:</span>
+				<div class="flex items-center space-x-3 pt-3">
+					<span class="text-xs text-[#71717a] font-mono">Hexadecimal personalizado:</span>
 					<input
 						type="color"
 						bind:value={themeColor}
-						class="w-8 h-8 p-0 border border-[#d4d4d8] cursor-pointer"
+						class="w-9 h-9 p-0 border border-[#d4d4d8] cursor-pointer"
 					/>
 					<input
 						type="text"
@@ -158,18 +234,27 @@
 						bind:value={themeColor}
 						class="w-28 h-9 px-2 border border-[#d4d4d8] font-mono text-xs uppercase"
 					/>
+					<div
+						class="px-3 py-1 text-xs font-mono uppercase"
+						style="background-color: {themeColor}; color: white;"
+					>
+						Prévia do Botão
+					</div>
 				</div>
 			</div>
 		</section>
 
 		<!-- 3. Modelo do Certificado e Coordenadas -->
 		<section class="space-y-6">
-			<h2 class="font-serif text-xl font-medium text-[#18181b] border-b border-[#e4e4e7] pb-2">
-				3. Posicionamento do Certificado
-			</h2>
+			<div class="flex items-center space-x-2 border-b border-[#e4e4e7] pb-2">
+				<img src="/icons/icon_file.png" alt="" class="w-4 h-4 object-contain" />
+				<h2 class="font-serif text-xl font-medium text-[#18181b]">
+					3. Posicionamento do Certificado
+				</h2>
+			</div>
 
 			<p class="text-xs text-[#71717a] font-sans">
-				Você pode usar o template padrão ou carregar o design gráfico da sua instituição. Clique na área do certificado para calibrar as posições do Nome, CPF e Data.
+				Você pode usar o template padrão ou carregar a arte gráfica da sua instituição. Clique na imagem para calibrar onde serão impressos o Nome, CPF e Data.
 			</p>
 
 			<CertificatePicker
@@ -178,7 +263,7 @@
 				onchange={handleCertConfigChange}
 			/>
 
-			<!-- Inputs ocultos para envio de dados do certificado -->
+			<!-- Inputs para envio de dados do certificado -->
 			<input type="hidden" name="cert_template_url" value={certTemplateData} />
 			<input type="hidden" name="cert_config" value={JSON.stringify(certConfig)} />
 		</section>
@@ -194,9 +279,14 @@
 			<button
 				type="submit"
 				disabled={loading}
-				class="inline-flex items-center justify-center h-12 px-8 bg-[#18181b] text-white text-xs uppercase tracking-widest font-medium hover:bg-black transition-colors disabled:opacity-50"
+				class="inline-flex items-center justify-center h-12 px-8 bg-[#18181b] text-white text-xs uppercase tracking-widest font-medium hover:bg-black transition-colors disabled:opacity-50 space-x-2"
 			>
-				<span>{loading ? 'Publicando...' : 'Publicar Evento'}</span>
+				{#if loading}
+					<img src="/icons/icon_loading.gif" alt="" class="w-4 h-4" />
+					<span>Publicando no R2...</span>
+				{:else}
+					<span>Publicar Evento</span>
+				{/if}
 			</button>
 		</div>
 	</form>

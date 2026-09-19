@@ -45,7 +45,7 @@
 	class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 space-y-12"
 	style="--event-theme: {data.event.theme_color};"
 >
-	<!-- Cabeçalho do Evento com Fita Editorial -->
+	<!-- Cabeçalho do Evento com Fita Editorial e Logo -->
 	<header class="space-y-4 border-b border-[#18181b] pb-6">
 		<div class="flex items-center justify-between">
 			<a href="/admin" class="text-xs uppercase font-mono text-[#71717a] hover:text-[#18181b]">
@@ -53,40 +53,52 @@
 			</a>
 
 			<div class="flex items-center space-x-2">
-				<span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--event-theme);"></span>
+				<span class="w-3 h-3 rounded-xs" style="background-color: var(--event-theme);"></span>
 				<span class="text-xs font-mono text-[#71717a]">Tema: {data.event.theme_color}</span>
 			</div>
 		</div>
 
-		<div class="space-y-2">
-			<div class="flex flex-wrap items-center gap-3">
-				<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
-					{data.event.title}
-				</h1>
-
-				{#if windowStatus.canCheckIn}
-					<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-300">
-						● Credenciamento Aberto
-					</span>
-				{:else if windowStatus.isUpcoming}
-					<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-300">
-						Agendado
-					</span>
-				{:else}
-					<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 border border-neutral-300">
-						Encerrado
-					</span>
+		<div class="space-y-3">
+			<div class="flex items-start space-x-4">
+				{#if data.event.logo_url}
+					<div class="w-16 h-16 shrink-0 border border-[#e4e4e7] p-1 bg-white flex items-center justify-center">
+						<img src={data.event.logo_url} alt="Logo do Evento" class="max-w-full max-h-full object-contain" />
+					</div>
 				{/if}
+
+				<div class="space-y-1 flex-1">
+					<div class="flex flex-wrap items-center gap-3">
+						<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
+							{data.event.title}
+						</h1>
+
+						{#if windowStatus.canCheckIn}
+							<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-300">
+								● Credenciamento Aberto
+							</span>
+						{:else if windowStatus.isUpcoming}
+							<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-300">
+								Agendado
+							</span>
+						{:else}
+							<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 border border-neutral-300">
+								Encerrado
+							</span>
+						{/if}
+					</div>
+
+					{#if data.event.description}
+						<div class="flex items-center space-x-1.5 text-sm text-[#52525b]">
+							<img src="/icons/icon_building.png" alt="" class="w-4 h-4 object-contain opacity-70" />
+							<span>{data.event.description}</span>
+						</div>
+					{/if}
+				</div>
 			</div>
 
-			{#if data.event.description}
-				<p class="font-sans text-sm text-[#52525b] max-w-2xl leading-relaxed">
-					{data.event.description}
-				</p>
-			{/if}
-
-			<div class="pt-1 text-xs font-mono text-[#71717a]">
-				Horário: <strong>{formatDateTime(data.event.starts_at)}</strong> até <strong>{formatDateTime(data.event.ends_at)}</strong>
+			<div class="pt-1 flex items-center space-x-2 text-xs font-mono text-[#71717a]">
+				<img src="/icons/icon_calendar.png" alt="" class="w-4 h-4 object-contain opacity-70" />
+				<span>Horário: <strong>{formatDateTime(data.event.starts_at)}</strong> até <strong>{formatDateTime(data.event.ends_at)}</strong></span>
 			</div>
 		</div>
 	</header>
@@ -99,7 +111,7 @@
 				Projeção para o Auditório
 			</h2>
 			<p class="font-sans text-xs text-[#71717a] leading-relaxed">
-				Projete este código na tela ou telão. O participante aponta a câmera do celular para abrir o formulário de credenciamento.
+				Projete este código na tela ou telão. O participante aponta a câmera do celular para abrir o formulário de credenciamento instantâneo.
 			</p>
 			
 			<div class="pt-2">
@@ -110,9 +122,12 @@
 		<!-- Ações e Emissão de Teste -->
 		<div class="space-y-6 md:border-l md:border-[#e4e4e7] md:pl-8">
 			<div class="space-y-2">
-				<h2 class="font-serif text-xl font-medium text-[#18181b]">
-					Calibragem do Certificado
-				</h2>
+				<div class="flex items-center space-x-2">
+					<img src="/icons/icon_file.png" alt="" class="w-4 h-4 object-contain" />
+					<h2 class="font-serif text-xl font-medium text-[#18181b]">
+						Calibragem do Certificado
+					</h2>
+				</div>
 				<p class="font-sans text-xs text-[#71717a] leading-relaxed">
 					Faça um teste de emissão no seu navegador para verificar se a tipografia e as coordenadas $(x, y)$ ficaram exatas no template gráfico.
 				</p>
@@ -123,9 +138,15 @@
 					type="button"
 					onclick={handleTestCertificate}
 					disabled={isGeneratingTestCert}
-					class="inline-flex items-center justify-center h-11 px-5 border border-[#18181b] bg-white text-xs uppercase tracking-wider font-medium text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors disabled:opacity-50"
+					class="inline-flex items-center justify-center space-x-2 h-11 px-5 border border-[#18181b] bg-white text-xs uppercase tracking-wider font-medium text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors disabled:opacity-50"
 				>
-					<span>{isGeneratingTestCert ? 'Gerando Teste...' : 'Baixar Certificado de Teste (.PDF)'}</span>
+					{#if isGeneratingTestCert}
+						<img src="/icons/icon_loading.gif" alt="" class="w-3.5 h-3.5" />
+						<span>Gerando Teste...</span>
+					{:else}
+						<img src="/icons/icon_file.png" alt="" class="w-3.5 h-3.5 object-contain" />
+						<span>Baixar Certificado de Teste (.PDF)</span>
+					{/if}
 				</button>
 			</div>
 
@@ -154,27 +175,34 @@
 	<section class="space-y-6">
 		<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 			<div class="space-y-1">
-				<h2 class="font-serif text-2xl font-medium text-[#18181b]">
-					Lista de Presença
-				</h2>
+				<div class="flex items-center space-x-2">
+					<img src="/icons/icon_people.png" alt="" class="w-5 h-5 object-contain" />
+					<h2 class="font-serif text-2xl font-medium text-[#18181b]">
+						Lista de Presença
+					</h2>
+				</div>
 				<p class="font-mono text-xs text-[#71717a]">
 					{data.attendances.length} {data.attendances.length === 1 ? 'presença confirmada' : 'presenças confirmadas'}
 				</p>
 			</div>
 
 			<div class="flex items-center space-x-3">
-				<input
-					type="text"
-					bind:value={searchQuery}
-					placeholder="Filtrar por nome ou e-mail..."
-					class="h-10 px-3 border border-[#d4d4d8] text-xs font-sans placeholder:text-[#a1a1aa] focus:outline-none focus:border-[#18181b]"
-				/>
+				<div class="relative">
+					<input
+						type="text"
+						bind:value={searchQuery}
+						placeholder="Filtrar por nome ou e-mail..."
+						class="h-10 pl-8 pr-3 border border-[#d4d4d8] text-xs font-sans placeholder:text-[#a1a1aa] focus:outline-none focus:border-[#18181b]"
+					/>
+					<img src="/icons/icon_search.png" alt="" class="w-3.5 h-3.5 absolute left-2.5 top-3 opacity-50 pointer-events-none" />
+				</div>
 
 				<a
 					href="/api/export-csv?eventId={data.event.id}"
-					class="inline-flex items-center justify-center h-10 px-4 text-xs uppercase tracking-wider font-medium font-mono border border-[#18181b] bg-white text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors whitespace-nowrap"
+					class="inline-flex items-center justify-center space-x-1.5 h-10 px-4 text-xs uppercase tracking-wider font-medium font-mono border border-[#18181b] bg-white text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors whitespace-nowrap"
 				>
-					Exportar .CSV
+					<img src="/icons/icon_archive.png" alt="" class="w-3.5 h-3.5 object-contain" />
+					<span>Exportar .CSV</span>
 				</a>
 			</div>
 		</div>

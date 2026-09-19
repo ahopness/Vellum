@@ -8,9 +8,12 @@
 	<!-- Top Bar Editorial -->
 	<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#18181b] pb-6">
 		<div class="space-y-1">
-			<span class="text-xs uppercase tracking-widest font-mono text-[#71717a]">
-				Painel de Controle
-			</span>
+			<div class="flex items-center space-x-2">
+				<img src="/icons/icon_desk.png" alt="" class="w-4 h-4 object-contain" />
+				<span class="text-xs uppercase tracking-widest font-mono text-[#71717a]">
+					Painel de Controle
+				</span>
+			</div>
 			<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
 				Eventos Publicados
 			</h1>
@@ -22,9 +25,10 @@
 		<div>
 			<a
 				href="/admin/events/new"
-				class="inline-flex items-center justify-center h-12 px-6 bg-[#18181b] text-white text-xs uppercase tracking-widest font-medium hover:bg-black transition-colors"
+				class="inline-flex items-center justify-center space-x-2 h-12 px-6 bg-[#18181b] text-white text-xs uppercase tracking-widest font-medium hover:bg-black transition-colors"
 			>
-				+ Novo Evento
+				<img src="/icons/icon_pen.png" alt="" class="w-3.5 h-3.5 object-contain invert brightness-0" />
+				<span>Novo Evento</span>
 			</a>
 		</div>
 	</div>
@@ -32,6 +36,7 @@
 	<!-- Lista em Tabela Aberta (Filosofia Anti-Card) -->
 	{#if data.events.length === 0}
 		<div class="py-16 text-center space-y-4 border-b border-[#e4e4e7]">
+			<img src="/icons/icon_archive.png" alt="" class="w-8 h-8 object-contain mx-auto opacity-40" />
 			<p class="font-serif text-2xl text-[#71717a] italic">
 				Nenhum evento registrado até o momento.
 			</p>
@@ -41,9 +46,10 @@
 			<div class="pt-4">
 				<a
 					href="/admin/events/new"
-					class="inline-flex items-center justify-center h-11 px-5 border border-[#18181b] text-xs uppercase tracking-wider font-medium text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors"
+					class="inline-flex items-center justify-center space-x-2 h-11 px-5 border border-[#18181b] text-xs uppercase tracking-wider font-medium text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors"
 				>
-					Cadastrar Evento
+					<img src="/icons/icon_pen.png" alt="" class="w-3.5 h-3.5 object-contain" />
+					<span>Cadastrar Primeiro Evento</span>
 				</a>
 			</div>
 		</div>
@@ -52,10 +58,20 @@
 			<table class="w-full text-left border-collapse">
 				<thead>
 					<tr class="border-b-2 border-[#18181b] text-[11px] uppercase tracking-wider font-mono text-[#71717a]">
-						<th class="py-3 pr-4 font-medium">Evento</th>
-						<th class="py-3 px-4 font-medium">Período</th>
+						<th class="py-3 pr-4 font-medium">Evento & Logo</th>
+						<th class="py-3 px-4 font-medium">
+							<span class="inline-flex items-center space-x-1">
+								<img src="/icons/icon_calendar.png" alt="" class="w-3.5 h-3.5 object-contain opacity-70" />
+								<span>Período</span>
+							</span>
+						</th>
 						<th class="py-3 px-4 font-medium">Status</th>
-						<th class="py-3 px-4 font-medium text-center">Presenças</th>
+						<th class="py-3 px-4 font-medium text-center">
+							<span class="inline-flex items-center space-x-1 justify-center">
+								<img src="/icons/icon_people.png" alt="" class="w-3.5 h-3.5 object-contain opacity-70" />
+								<span>Presenças</span>
+							</span>
+						</th>
 						<th class="py-3 pl-4 font-medium text-right">Ações</th>
 					</tr>
 				</thead>
@@ -63,14 +79,22 @@
 					{#each data.events as event}
 						{@const window = getAttendanceWindow(event.starts_at, event.ends_at)}
 						<tr class="hover:bg-neutral-50/60 transition-colors group">
-							<!-- Nome e Tema -->
+							<!-- Nome, Logo e Tema -->
 							<td class="py-4 pr-4">
 								<div class="flex items-center space-x-3">
-									<div
-										class="w-3.5 h-3.5 shrink-0"
-										style="background-color: {event.theme_color};"
-										title="Cor Temática: {event.theme_color}"
-									></div>
+									{#if event.logo_url}
+										<img
+											src={event.logo_url}
+											alt="Logo"
+											class="w-8 h-8 object-contain border border-[#e4e4e7] p-0.5 bg-white shrink-0"
+										/>
+									{:else}
+										<div
+											class="w-3.5 h-3.5 shrink-0 rounded-xs"
+											style="background-color: {event.theme_color};"
+											title="Cor Temática: {event.theme_color}"
+										></div>
+									{/if}
 									<div>
 										<a
 											href="/admin/events/{event.id}"

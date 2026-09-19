@@ -6,6 +6,7 @@
 	<!-- Hero Section Editorial -->
 	<section class="space-y-6">
 		<div class="inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-mono text-[#71717a] border-b border-[#18181b] pb-1">
+			<img src="/icons/icon_note.png" alt="" class="w-4 h-4 object-contain" />
 			<span>Publicação & Credenciamento Acadêmico</span>
 		</div>
 
@@ -23,28 +24,32 @@
 			{#if data.admin}
 				<a
 					href="/admin"
-					class="inline-flex items-center justify-center h-12 px-6 bg-[#18181b] text-white text-sm uppercase tracking-wider font-medium hover:bg-black transition-colors"
+					class="inline-flex items-center justify-center space-x-2 h-12 px-6 bg-[#18181b] text-white text-sm uppercase tracking-wider font-medium hover:bg-black transition-colors"
 				>
-					Acessar Meus Eventos →
+					<img src="/icons/icon_calendar.png" alt="" class="w-4 h-4 object-contain invert brightness-0" />
+					<span>Acessar Meus Eventos →</span>
 				</a>
 				<a
 					href="/admin/events/new"
-					class="inline-flex items-center justify-center h-12 px-6 border border-[#18181b] text-[#18181b] text-sm uppercase tracking-wider font-medium hover:bg-[#18181b] hover:text-white transition-colors"
+					class="inline-flex items-center justify-center space-x-2 h-12 px-6 border border-[#18181b] text-[#18181b] text-sm uppercase tracking-wider font-medium hover:bg-[#18181b] hover:text-white transition-colors"
 				>
-					Criar Novo Evento
+					<img src="/icons/icon_pen.png" alt="" class="w-4 h-4 object-contain" />
+					<span>Criar Novo Evento</span>
 				</a>
 			{:else}
 				<a
 					href="/admin/login"
-					class="inline-flex items-center justify-center h-12 px-6 bg-[#18181b] text-white text-sm uppercase tracking-wider font-medium hover:bg-black transition-colors"
+					class="inline-flex items-center justify-center space-x-2 h-12 px-6 bg-[#18181b] text-white text-sm uppercase tracking-wider font-medium hover:bg-black transition-colors"
 				>
-					Área do Organizador →
+					<img src="/icons/icon_door.png" alt="" class="w-4 h-4 object-contain invert brightness-0" />
+					<span>Área do Organizador →</span>
 				</a>
 				<a
 					href="/politica-de-privacidade"
-					class="inline-flex items-center justify-center h-12 px-6 border border-[#d4d4d8] text-[#52525b] text-sm uppercase tracking-wider font-medium hover:border-[#18181b] hover:text-[#18181b] transition-colors"
+					class="inline-flex items-center justify-center space-x-2 h-12 px-6 border border-[#d4d4d8] text-[#52525b] text-sm uppercase tracking-wider font-medium hover:border-[#18181b] hover:text-[#18181b] transition-colors"
 				>
-					Conhecer a Política LGPD
+					<img src="/icons/icon_question.png" alt="" class="w-4 h-4 object-contain opacity-70" />
+					<span>Conhecer a Política LGPD</span>
 				</a>
 			{/if}
 		</div>
@@ -56,7 +61,10 @@
 	<!-- Pilares Estruturais (Layout Aberto Anti-Card) -->
 	<section class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
 		<div class="space-y-3">
-			<span class="font-mono text-xs text-[#a1a1aa]">01 / PRIVACIDADE</span>
+			<div class="flex items-center space-x-2">
+				<img src="/icons/icon_eraser.png" alt="" class="w-4 h-4 object-contain opacity-80" />
+				<span class="font-mono text-xs text-[#a1a1aa]">01 / PRIVACIDADE</span>
+			</div>
 			<h3 class="font-serif text-xl font-medium text-[#18181b]">
 				LGPD por Design
 			</h3>
@@ -66,7 +74,10 @@
 		</div>
 
 		<div class="space-y-3">
-			<span class="font-mono text-xs text-[#a1a1aa]">02 / PERFORMANCE</span>
+			<div class="flex items-center space-x-2">
+				<img src="/icons/icon_files.png" alt="" class="w-4 h-4 object-contain opacity-80" />
+				<span class="font-mono text-xs text-[#a1a1aa]">02 / PERFORMANCE</span>
+			</div>
 			<h3 class="font-serif text-xl font-medium text-[#18181b]">
 				Leveza no 4G
 			</h3>
@@ -76,7 +87,10 @@
 		</div>
 
 		<div class="space-y-3">
-			<span class="font-mono text-xs text-[#a1a1aa]">03 / SEGURANÇA</span>
+			<div class="flex items-center space-x-2">
+				<img src="/icons/icon_calendar.png" alt="" class="w-4 h-4 object-contain opacity-80" />
+				<span class="font-mono text-xs text-[#a1a1aa]">03 / SEGURANÇA</span>
+			</div>
 			<h3 class="font-serif text-xl font-medium text-[#18181b]">
 				Janela Temporal
 			</h3>
@@ -91,9 +105,12 @@
 
 	<!-- Nota Editorial de Filosofia -->
 	<section class="py-4 space-y-4">
-		<h4 class="font-mono text-xs uppercase tracking-widest text-[#71717a]">
-			Filosofia Editorial & Tipografia
-		</h4>
+		<div class="flex items-center space-x-2">
+			<img src="/icons/icon_hand.png" alt="" class="w-4 h-4 object-contain opacity-70" />
+			<h4 class="font-mono text-xs uppercase tracking-widest text-[#71717a]">
+				Filosofia Editorial & Tipografia
+			</h4>
+		</div>
 		<p class="font-serif text-lg text-[#52525b] italic leading-relaxed">
 			“O nome Vellum evoca os pergaminhos finos onde o conhecimento clássico era fixado. Acreditamos que ferramentas acadêmicas devem ser silenciosas, precisas e dignas do conteúdo que registram.”
 		</p>

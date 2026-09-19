@@ -108,6 +108,16 @@
 	<main class="max-w-xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 flex-1 flex flex-col justify-center space-y-10">
 		<!-- Cabeçalho Editorial do Evento -->
 		<header class="space-y-4">
+			{#if data.event.logo_url}
+				<div class="mb-2">
+					<img
+						src={data.event.logo_url}
+						alt="Logo Institucional"
+						class="max-h-16 max-w-[200px] object-contain block"
+					/>
+				</div>
+			{/if}
+
 			<div class="flex items-center space-x-2">
 				<span class="text-xs uppercase tracking-widest font-mono text-[#71717a]">
 					Credenciamento Acadêmico
@@ -119,13 +129,17 @@
 			</h1>
 
 			{#if data.event.description}
-				<p class="font-sans text-sm text-[#52525b] leading-relaxed">
-					{data.event.description}
-				</p>
+				<div class="flex items-start space-x-2 text-sm text-[#52525b] leading-relaxed">
+					<img src="/icons/icon_building.png" alt="" class="w-4 h-4 object-contain opacity-70 mt-1 shrink-0" />
+					<p>{data.event.description}</p>
+				</div>
 			{/if}
 
 			<div class="pt-2 border-t border-[#e4e4e7] flex flex-wrap items-center justify-between text-xs font-mono text-[#71717a] gap-2">
-				<span>Horário: <strong>{formatTime(data.event.starts_at)}</strong> – <strong>{formatTime(data.event.ends_at)}</strong></span>
+				<div class="flex items-center space-x-1.5">
+					<img src="/icons/icon_calendar.png" alt="" class="w-3.5 h-3.5 object-contain opacity-70" />
+					<span>Horário: <strong>{formatTime(data.event.starts_at)}</strong> – <strong>{formatTime(data.event.ends_at)}</strong></span>
+				</div>
 				<span>{formatDateTime(data.event.starts_at).split('às')[0]}</span>
 			</div>
 		</header>
@@ -134,8 +148,9 @@
 		{#if windowStatus.isUpcoming && !submitted}
 			<div class="space-y-6 py-8 border-y border-[#e4e4e7]">
 				<div class="space-y-2">
-					<span class="inline-block text-xs font-mono uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 border border-amber-200">
-						Credenciamento em Breve
+					<span class="inline-flex items-center space-x-1 text-xs font-mono uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 border border-amber-200">
+						<img src="/icons/icon_calendar.png" alt="" class="w-3 h-3 object-contain" />
+						<span>Credenciamento em Breve</span>
 					</span>
 					<h2 class="font-serif text-2xl text-[#18181b]">
 						O evento ainda não começou
@@ -153,8 +168,9 @@
 		{:else if windowStatus.isEnded && !submitted}
 			<div class="space-y-6 py-8 border-y border-[#e4e4e7]">
 				<div class="space-y-2">
-					<span class="inline-block text-xs font-mono uppercase tracking-wider text-neutral-700 bg-neutral-100 px-2 py-0.5 border border-neutral-300">
-						Presenças Encerradas
+					<span class="inline-flex items-center space-x-1 text-xs font-mono uppercase tracking-wider text-neutral-700 bg-neutral-100 px-2 py-0.5 border border-neutral-300">
+						<img src="/icons/icon_archive.png" alt="" class="w-3 h-3 object-contain opacity-70" />
+						<span>Presenças Encerradas</span>
 					</span>
 					<h2 class="font-serif text-2xl text-[#18181b]">
 						Período de credenciamento finalizado
@@ -172,11 +188,12 @@
 		{:else if submitted}
 			<div class="space-y-8 py-8 border-y border-[#e4e4e7]">
 				<div class="space-y-3">
-					<span class="inline-flex items-center px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-300">
-						✓ Presença Confirmada
+					<span class="inline-flex items-center space-x-1.5 px-2 py-0.5 text-xs font-mono uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-300">
+						<span>✓</span>
+						<span>{alreadyCheckedIn ? 'Presença já registrada anteriormente' : 'Presença confirmada com sucesso'}</span>
 					</span>
 					<h2 class="font-serif text-2xl sm:text-3xl text-[#18181b]">
-						{alreadyCheckedIn ? 'Presença já registrada anteriormente' : 'Presença registrada com sucesso'}
+						Presença Registrada
 					</h2>
 					<p class="font-sans text-sm text-[#52525b] leading-relaxed">
 						Obrigado, <strong class="text-[#18181b]">{name}</strong>. Seu registro foi validado nominalmente na lista oficial deste evento.
@@ -197,7 +214,13 @@
 							class="w-full h-12 text-xs uppercase tracking-widest font-medium transition-opacity flex items-center justify-center space-x-2"
 							style="background-color: var(--event-theme); color: {contrastTextColor};"
 						>
-							<span>{downloadingCert ? 'Montando PDF...' : 'Baixar Certificado (.PDF)'}</span>
+							{#if downloadingCert}
+								<img src="/icons/icon_loading.gif" alt="" class="w-4 h-4" />
+								<span>Montando PDF no seu celular...</span>
+							{:else}
+								<img src="/icons/icon_file.png" alt="" class="w-3.5 h-3.5 object-contain invert brightness-0" />
+								<span>Baixar Certificado (.PDF)</span>
+							{/if}
 						</button>
 					</div>
 				{:else}
@@ -280,7 +303,12 @@
 						class="w-full h-12 text-xs uppercase tracking-widest font-medium transition-opacity flex items-center justify-center space-x-2 disabled:opacity-50"
 						style="background-color: var(--event-theme); color: {contrastTextColor};"
 					>
-						<span>{submitting ? 'Registrando Presença...' : 'Confirmar Presença & Emitir'}</span>
+						{#if submitting}
+							<img src="/icons/icon_loading.gif" alt="" class="w-4 h-4" />
+							<span>Registrando Presença...</span>
+						{:else}
+							<span>Confirmar Presença & Emitir</span>
+						{/if}
 					</button>
 				</div>
 			</form>
