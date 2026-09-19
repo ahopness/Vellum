@@ -16,15 +16,12 @@
 		<div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#71717a] font-sans space-y-4 sm:space-y-0">
 			<div class="flex items-center space-x-2">
 				<span class="font-serif font-medium text-[#18181b]">Vellum</span>
-				<span>—</span>
-				<span>Sistema Editorial de Presença & Certificados</span>
 			</div>
 
 			<div class="flex items-center space-x-6">
 				<a href="/politica-de-privacidade" class="hover:text-[#18181b] transition-colors underline underline-offset-4 decoration-[#d4d4d8]">
-					Política de Privacidade (LGPD)
+					Política de Privacidade
 				</a>
-				<span class="font-mono text-[11px] text-[#a1a1aa]">v1.0</span>
 			</div>
 		</div>
 	</footer>

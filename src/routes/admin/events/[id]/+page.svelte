@@ -66,7 +66,7 @@
 					action="?/delete"
 					use:enhance={({ cancel }) => {
 						const ok = confirm(
-							'Atenção: Ao excluir este evento, todas as presenças registradas no D1 e os arquivos no R2 (logo e certificado) serão removidos permanentemente. Deseja continuar?'
+							'Atenção: Ao excluir este evento, todas as presenças registradas serão removidos permanentemente. Deseja continuar?'
 						);
 						if (!ok) return cancel();
 						isDeleting = true;
@@ -288,7 +288,7 @@
 				</h3>
 			</div>
 			<p class="text-xs text-[#71717a] font-sans max-w-md">
-				Remove definitivamente este evento e toda a lista de presenças do Cloudflare D1, e apaga os arquivos de logo e template vinculados no Cloudflare R2.
+				Remove definitivamente este evento e toda a lista de presenças, e apaga os arquivos de logo e template vinculados.
 			</p>
 		</div>
 
@@ -297,7 +297,7 @@
 			action="?/delete"
 			use:enhance={({ cancel }) => {
 				const ok = confirm(
-					'Atenção: Ao excluir este evento, todas as presenças registradas no D1 e os arquivos no R2 serão removidos permanentemente. Deseja continuar?'
+					'Atenção: Ao excluir este evento, todas as presenças registradas serão removidos permanentemente. Deseja continuar?'
 				);
 				if (!ok) return cancel();
 				isDeleting = true;
@@ -310,7 +310,7 @@
 			>
 				{#if isDeleting}
 					<img src="/icons/icon_loading.gif" alt="" class="w-3.5 h-3.5" />
-					<span>Excluindo do D1 e R2...</span>
+					<span>Excluindo dados...</span>
 				{:else}
 					<img src="/icons/icon_eraser.png" alt="" class="w-3.5 h-3.5 object-contain" />
 					<span>Excluir Permanentemente</span>

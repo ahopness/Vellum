@@ -110,10 +110,9 @@
 			</div>
 
 			<div class="space-y-5">
-				<!-- Upload de Logo com R2 -->
 				<div class="space-y-2 p-4 border border-[#e4e4e7] bg-white">
 					<span class="block text-xs uppercase tracking-wider text-[#71717a] font-sans font-medium">
-						Logo do Evento / Instituição (Salvo no R2)
+						Logo do Evento / Instituição
 					</span>
 
 					<div class="flex flex-wrap items-center gap-4">
@@ -283,7 +282,7 @@
 			>
 				{#if loading}
 					<img src="/icons/icon_loading.gif" alt="" class="w-4 h-4" />
-					<span>Publicando no R2...</span>
+					<span>Publicando dados...</span>
 				{:else}
 					<span>Publicar Evento</span>
 				{/if}

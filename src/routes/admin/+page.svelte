@@ -163,7 +163,7 @@
 									action="?/delete"
 									class="inline-block"
 									use:enhance={({ cancel }) => {
-										const ok = confirm(`Excluir permanentemente o evento "${event.title}" e remover todos os dados vinculados do D1 e R2?`);
+										const ok = confirm(`Excluir permanentemente o evento "${event.title}" e remover todos os dados vinculados?`);
 										if (!ok) return cancel();
 									}}
 								>

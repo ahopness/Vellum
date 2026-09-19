@@ -6,16 +6,13 @@
 		<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
 			Política de Privacidade
 		</h1>
-		<p class="font-sans text-sm text-[#71717a]">
-			Em conformidade com a Lei Geral de Proteção de Dados Pessoais do Brasil (LGPD — Lei nº 13.709/2018).
-		</p>
 	</header>
 
 	<article class="space-y-10 font-sans text-base text-[#27272a] leading-relaxed">
 		<!-- Seção 1 -->
 		<section class="space-y-3">
 			<h2 class="font-serif text-xl font-medium text-[#18181b]">
-				1. Princípio da Minimização e Privacidade por Design (Privacy by Design)
+				1. Princípio da Minimização e Privacy by Design
 			</h2>
 			<p>
 				Nossa arquitetura foi intencionalmente projetada para coletar e armazenar o <strong>mínimo estritamente necessário</strong> de dados pessoais para cumprir a finalidade de validação de presença acadêmica e profissional.
