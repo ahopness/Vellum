@@ -1,0 +1,14 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.vercel
+.output
+node_modules/
+site/
+build/
+.cloudflare/
+.wrangler/
+.data/

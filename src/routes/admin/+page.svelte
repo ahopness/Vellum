@@ -1,0 +1,142 @@
+<script lang="ts">
+	import { formatDateTime, getAttendanceWindow } from '$lib/utils/formatters';
+
+	let { data } = $props();
+</script>
+
+<div class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 space-y-10">
+	<!-- Top Bar Editorial -->
+	<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#18181b] pb-6">
+		<div class="space-y-1">
+			<span class="text-xs uppercase tracking-widest font-mono text-[#71717a]">
+				Painel de Controle
+			</span>
+			<h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#18181b]">
+				Eventos Publicados
+			</h1>
+			<p class="font-sans text-sm text-[#71717a]">
+				{data.events.length} {data.events.length === 1 ? 'evento cadastrado' : 'eventos cadastrados'}
+			</p>
+		</div>
+
+		<div>
+			<a
+				href="/admin/events/new"
+				class="inline-flex items-center justify-center h-12 px-6 bg-[#18181b] text-white text-xs uppercase tracking-widest font-medium hover:bg-black transition-colors"
+			>
+				+ Novo Evento
+			</a>
+		</div>
+	</div>
+
+	<!-- Lista em Tabela Aberta (Filosofia Anti-Card) -->
+	{#if data.events.length === 0}
+		<div class="py-16 text-center space-y-4 border-b border-[#e4e4e7]">
+			<p class="font-serif text-2xl text-[#71717a] italic">
+				Nenhum evento registrado até o momento.
+			</p>
+			<p class="font-sans text-sm text-[#a1a1aa] max-w-md mx-auto">
+				Crie seu primeiro evento acadêmico ou corporativo para gerar a folha de presença e o modelo de certificado.
+			</p>
+			<div class="pt-4">
+				<a
+					href="/admin/events/new"
+					class="inline-flex items-center justify-center h-11 px-5 border border-[#18181b] text-xs uppercase tracking-wider font-medium text-[#18181b] hover:bg-[#18181b] hover:text-white transition-colors"
+				>
+					Cadastrar Evento
+				</a>
+			</div>
+		</div>
+	{:else}
+		<div class="overflow-x-auto">
+			<table class="w-full text-left border-collapse">
+				<thead>
+					<tr class="border-b-2 border-[#18181b] text-[11px] uppercase tracking-wider font-mono text-[#71717a]">
+						<th class="py-3 pr-4 font-medium">Evento</th>
+						<th class="py-3 px-4 font-medium">Período</th>
+						<th class="py-3 px-4 font-medium">Status</th>
+						<th class="py-3 px-4 font-medium text-center">Presenças</th>
+						<th class="py-3 pl-4 font-medium text-right">Ações</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-[#e4e4e7] font-sans text-sm">
+					{#each data.events as event}
+						{@const window = getAttendanceWindow(event.starts_at, event.ends_at)}
+						<tr class="hover:bg-neutral-50/60 transition-colors group">
+							<!-- Nome e Tema -->
+							<td class="py-4 pr-4">
+								<div class="flex items-center space-x-3">
+									<div
+										class="w-3.5 h-3.5 shrink-0"
+										style="background-color: {event.theme_color};"
+										title="Cor Temática: {event.theme_color}"
+									></div>
+									<div>
+										<a
+											href="/admin/events/{event.id}"
+											class="font-serif text-base font-medium text-[#18181b] group-hover:underline underline-offset-2"
+										>
+											{event.title}
+										</a>
+										{#if event.description}
+											<p class="text-xs text-[#71717a] line-clamp-1 max-w-xs sm:max-w-md">
+												{event.description}
+											</p>
+										{/if}
+									</div>
+								</div>
+							</td>
+
+							<!-- Período -->
+							<td class="py-4 px-4 font-mono text-xs text-[#52525b] whitespace-nowrap">
+								<div>{formatDateTime(event.starts_at)}</div>
+								<div class="text-[#a1a1aa] text-[11px]">até {formatDateTime(event.ends_at)}</div>
+							</td>
+
+							<!-- Status -->
+							<td class="py-4 px-4 whitespace-nowrap">
+								{#if window.canCheckIn}
+									<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-300">
+										● Em Credenciamento
+									</span>
+								{:else if window.isUpcoming}
+									<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-300">
+										Agendado
+									</span>
+								{:else}
+									<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 border border-neutral-300">
+										Encerrado
+									</span>
+								{/if}
+							</td>
+
+							<!-- Presenças -->
+							<td class="py-4 px-4 text-center font-mono font-medium text-sm text-[#18181b] whitespace-nowrap">
+								{event.attendeesCount}
+							</td>
+
+							<!-- Ações -->
+							<td class="py-4 pl-4 text-right whitespace-nowrap space-x-3 text-xs uppercase tracking-wider font-mono">
+								<a
+									href="/admin/events/{event.id}"
+									class="text-[#18181b] hover:underline underline-offset-2 font-medium"
+								>
+									Gerenciar
+								</a>
+								<span class="text-[#d4d4d8]">|</span>
+								<a
+									href="/e/{event.id}"
+									target="_blank"
+									rel="noreferrer"
+									class="text-[#71717a] hover:text-[#18181b] hover:underline underline-offset-2"
+								>
+									Página Pública ↗
+								</a>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	{/if}
+</div>
