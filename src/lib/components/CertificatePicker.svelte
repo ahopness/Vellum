@@ -15,7 +15,7 @@
 		onchange
 	}: Props = $props();
 
-	type ActiveField = 'name' | 'cpf' | 'date';
+	type ActiveField = 'name' | 'cpf' | 'date' | 'organizer_name' | 'organizer_cpf';
 	let activeField = $state<ActiveField>('name');
 
 	let imageElement: HTMLElement | null = $state(null);
@@ -26,7 +26,15 @@
 	const currentTemplateUrl = $derived(userTemplateUrl ?? templateUrl ?? '');
 
 	const currentConfig = $derived(
-		activeField === 'name' ? config.name_field : activeField === 'cpf' ? config.cpf_field : config.date_field
+		activeField === 'name'
+			? config.name_field
+			: activeField === 'cpf'
+			? config.cpf_field
+			: activeField === 'date'
+			? config.date_field
+			: activeField === 'organizer_name'
+			? config.organizer_name_field
+			: config.organizer_cpf_field
 	);
 
 	// Garante que os campos existam com valores padrão
@@ -38,6 +46,12 @@
 	}
 	if (!config.date_field) {
 		config.date_field = { x: 950, y: 700, font_size: 14, align: 'right', color: '#71717a' };
+	}
+	if (!config.organizer_name_field) {
+		config.organizer_name_field = { x: 300, y: 680, font_size: 16, align: 'center', color: '#18181b' };
+	}
+	if (!config.organizer_cpf_field) {
+		config.organizer_cpf_field = { x: 300, y: 710, font_size: 12, align: 'center', color: '#52525b' };
 	}
 
 	function handleImageLoad(e: Event) {
@@ -78,6 +92,20 @@
 			} else {
 				config.date_field.x = naturalX;
 				config.date_field.y = naturalY;
+			}
+		} else if (activeField === 'organizer_name') {
+			if (!config.organizer_name_field) {
+				config.organizer_name_field = { x: naturalX, y: naturalY, font_size: 16, align: 'center', color: '#18181b' };
+			} else {
+				config.organizer_name_field.x = naturalX;
+				config.organizer_name_field.y = naturalY;
+			}
+		} else if (activeField === 'organizer_cpf') {
+			if (!config.organizer_cpf_field) {
+				config.organizer_cpf_field = { x: naturalX, y: naturalY, font_size: 12, align: 'center', color: '#52525b' };
+			} else {
+				config.organizer_cpf_field.x = naturalX;
+				config.organizer_cpf_field.y = naturalY;
 			}
 		}
 
@@ -136,7 +164,7 @@
 					? 'bg-[#18181b] text-white border-[#18181b]'
 					: 'bg-white text-[#71717a] border-[#d4d4d8] hover:border-[#18181b]'}"
 			>
-				CPF
+				CPF do Aluno
 			</button>
 
 			<button
@@ -147,6 +175,26 @@
 					: 'bg-white text-[#71717a] border-[#d4d4d8] hover:border-[#18181b]'}"
 			>
 				Data
+			</button>
+
+			<button
+				type="button"
+				onclick={() => (activeField = 'organizer_name')}
+				class="px-3 h-9 text-xs font-medium uppercase tracking-wider border transition-colors {activeField === 'organizer_name'
+					? 'bg-[#18181b] text-white border-[#18181b]'
+					: 'bg-white text-[#71717a] border-[#d4d4d8] hover:border-[#18181b]'}"
+			>
+				Nome Organizador
+			</button>
+
+			<button
+				type="button"
+				onclick={() => (activeField = 'organizer_cpf')}
+				class="px-3 h-9 text-xs font-medium uppercase tracking-wider border transition-colors {activeField === 'organizer_cpf'
+					? 'bg-[#18181b] text-white border-[#18181b]'
+					: 'bg-white text-[#71717a] border-[#d4d4d8] hover:border-[#18181b]'}"
+			>
+				CPF Organizador
 			</button>
 		</div>
 
@@ -170,7 +218,17 @@
 	>
 		<!-- Instrução flutuante sutil -->
 		<div class="absolute top-2 left-2 z-10 bg-white/90 backdrop-blur-xs px-2.5 py-1 text-xs text-[#71717a] border border-[#e4e4e7] pointer-events-none font-sans">
-			Clique na imagem para posicionar: <strong class="text-[#18181b] font-medium uppercase">{activeField === 'name' ? 'Nome' : activeField === 'cpf' ? 'CPF' : 'Data'}</strong>
+			Clique na imagem para posicionar: <strong class="text-[#18181b] font-medium uppercase">
+				{activeField === 'name'
+					? 'Nome do Aluno'
+					: activeField === 'cpf'
+					? 'CPF do Aluno'
+					: activeField === 'date'
+					? 'Data'
+					: activeField === 'organizer_name'
+					? 'Nome do Organizador'
+					: 'CPF do Organizador'}
+			</strong>
 		</div>
 
 		<!-- Imagem de fundo ou Mockup Editorial -->
@@ -269,6 +327,50 @@
 					style="color: {config.date_field.color || '#71717a'};"
 				>
 					[ 19/09/2026 ]
+				</span>
+			</div>
+		{/if}
+
+		<!-- 4. Marcador Nome do Organizador -->
+		{#if config.organizer_name_field}
+			{@const pos = getPercentPos(config.organizer_name_field)}
+			<div
+				class="absolute pointer-events-none flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
+				style="left: {pos.left}; top: {pos.top};"
+			>
+				<div
+					class="w-3.5 h-3.5 border border-dashed rounded-full flex items-center justify-center"
+					style="border-color: {activeField === 'organizer_name' ? themeColor : '#71717a'};"
+				>
+					<div class="w-1.5 h-1.5 rounded-full" style="background-color: {activeField === 'organizer_name' ? themeColor : '#71717a'};"></div>
+				</div>
+				<span
+					class="text-[10px] font-serif font-medium whitespace-nowrap px-1.5 py-0.5 mt-0.5 bg-white/95 border border-[#e4e4e7] shadow-xs"
+					style="color: {config.organizer_name_field.color || '#18181b'}; font-size: {Math.max(10, config.organizer_name_field.font_size * 0.45)}px;"
+				>
+					[ Nome do Organizador ]
+				</span>
+			</div>
+		{/if}
+
+		<!-- 5. Marcador CPF do Organizador -->
+		{#if config.organizer_cpf_field}
+			{@const pos = getPercentPos(config.organizer_cpf_field)}
+			<div
+				class="absolute pointer-events-none flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
+				style="left: {pos.left}; top: {pos.top};"
+			>
+				<div
+					class="w-3 h-3 border border-dashed rounded-full flex items-center justify-center"
+					style="border-color: {activeField === 'organizer_cpf' ? themeColor : '#71717a'};"
+				>
+					<div class="w-1 h-1 rounded-full" style="background-color: {activeField === 'organizer_cpf' ? themeColor : '#71717a'};"></div>
+				</div>
+				<span
+					class="text-[9px] font-sans whitespace-nowrap px-1 py-0.5 mt-0.5 bg-white/95 border border-[#e4e4e7] shadow-xs"
+					style="color: {config.organizer_cpf_field.color || '#52525b'}; font-size: {Math.max(9, config.organizer_cpf_field.font_size * 0.45)}px;"
+				>
+					[ CPF Organizador ]
 				</span>
 			</div>
 		{/if}

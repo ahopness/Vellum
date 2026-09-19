@@ -35,7 +35,11 @@ export const load: PageServerLoad = async ({ params, locals, platform, url }) =>
 	return {
 		event,
 		attendances,
-		publicUrl
+		publicUrl,
+		organizer: {
+			name: admin.name,
+			cpf: admin.cpf
+		}
 	};
 };
 

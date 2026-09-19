@@ -13,6 +13,8 @@ export interface CertConfig {
 	name_field: FieldConfig;
 	cpf_field?: FieldConfig;
 	date_field?: FieldConfig;
+	organizer_name_field?: FieldConfig;
+	organizer_cpf_field?: FieldConfig;
 	reference_width?: number; // Largura de referência do template (ex: 1200)
 	reference_height?: number; // Altura de referência do template (ex: 800)
 }
@@ -58,6 +60,8 @@ export async function generateCertificatePdf(params: {
 	config: CertConfig;
 	participantName: string;
 	participantCpf?: string;
+	organizerName?: string;
+	organizerCpf?: string;
 	eventTitle: string;
 	issueDate?: string;
 }): Promise<Uint8Array> {
@@ -66,6 +70,8 @@ export async function generateCertificatePdf(params: {
 		config,
 		participantName,
 		participantCpf,
+		organizerName,
+		organizerCpf,
 		eventTitle,
 		issueDate = new Date().toLocaleDateString('pt-BR')
 	} = params;
@@ -191,6 +197,17 @@ export async function generateCertificatePdf(params: {
 		drawTextField(issueDate, config.date_field, fontRegular);
 	}
 
+	// 4. Nome do Organizador
+	if (config.organizer_name_field && organizerName) {
+		drawTextField(organizerName, config.organizer_name_field, fontBold);
+	}
+
+	// 5. CPF do Organizador
+	if (config.organizer_cpf_field && organizerCpf) {
+		const cpfLabel = organizerCpf.startsWith('CPF') ? organizerCpf : `CPF: ${organizerCpf}`;
+		drawTextField(cpfLabel, config.organizer_cpf_field, fontRegular);
+	}
+
 	return await pdfDoc.save();
 }
 
@@ -235,6 +252,8 @@ export async function downloadCertificatePdf(params: {
 	config: CertConfig;
 	participantName: string;
 	participantCpf?: string;
+	organizerName?: string;
+	organizerCpf?: string;
 	eventTitle: string;
 	issueDate?: string;
 }) {

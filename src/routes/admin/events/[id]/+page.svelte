@@ -49,6 +49,8 @@
 				config: certConfig,
 				participantName: 'Exemplo de Nome Acadêmico',
 				participantCpf: '123.456.789-00',
+				organizerName: data.organizer?.name,
+				organizerCpf: data.organizer?.cpf,
 				eventTitle: data.event.title
 			});
 		} catch (err) {

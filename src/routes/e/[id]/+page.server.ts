@@ -6,8 +6,11 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 	const db = getDb(platform);
 	const event = await db
 		.prepare(
-			`SELECT id, title, description, logo_url, starts_at, ends_at, theme_color,
-			 cert_template_url, cert_config FROM events WHERE id = ?`
+			`SELECT e.id, e.title, e.description, e.logo_url, e.starts_at, e.ends_at, e.theme_color,
+			 e.cert_template_url, e.cert_config, a.name AS organizer_name, a.cpf AS organizer_cpf
+			 FROM events e
+			 LEFT JOIN admins a ON e.admin_id = a.id
+			 WHERE e.id = ?`
 		)
 		.bind(params.id)
 		.first<VellumEvent>();

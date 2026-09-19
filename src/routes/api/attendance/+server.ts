@@ -24,7 +24,12 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 		// Busca o evento
 		const event = await db
-			.prepare('SELECT * FROM events WHERE id = ?')
+			.prepare(
+				`SELECT e.*, a.name AS organizer_name, a.cpf AS organizer_cpf
+				 FROM events e
+				 LEFT JOIN admins a ON e.admin_id = a.id
+				 WHERE e.id = ?`
+			)
 			.bind(eventId)
 			.first<VellumEvent>();
 
@@ -84,7 +89,9 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 				id: event.id,
 				title: event.title,
 				cert_template_url: event.cert_template_url,
-				cert_config: event.cert_config
+				cert_config: event.cert_config,
+				organizer_name: event.organizer_name,
+				organizer_cpf: event.organizer_cpf
 			}
 		});
 	} catch (err: any) {

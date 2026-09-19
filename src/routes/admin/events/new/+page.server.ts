@@ -50,6 +50,8 @@ export const actions: Actions = {
 			certConfig = JSON.stringify({
 				name_field: { x: 600, y: 440, font_size: 32, align: 'center', color: '#18181b' },
 				cpf_field: { x: 600, y: 500, font_size: 16, align: 'center', color: '#52525b' },
+				organizer_name_field: { x: 300, y: 680, font_size: 16, align: 'center', color: '#18181b' },
+				organizer_cpf_field: { x: 300, y: 710, font_size: 12, align: 'center', color: '#52525b' },
 				date_field: { x: 950, y: 700, font_size: 14, align: 'right', color: '#71717a' },
 				reference_width: 1200,
 				reference_height: 800

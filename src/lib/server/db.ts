@@ -22,6 +22,8 @@ export interface VellumEvent {
 	ends_at: string;
 	cert_template_url: string;
 	cert_config: string; // JSON
+	organizer_name?: string;
+	organizer_cpf?: string;
 	created_at: string;
 	updated_at: string;
 }

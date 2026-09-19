@@ -66,6 +66,11 @@
 			submitted = true;
 			alreadyCheckedIn = result.alreadyCheckedIn;
 
+			if (result.event) {
+				if (result.event.organizer_name) data.event.organizer_name = result.event.organizer_name;
+				if (result.event.organizer_cpf) data.event.organizer_cpf = result.event.organizer_cpf;
+			}
+
 			// Se o certificado já estiver liberado (fim do evento ou tolerância de encerramento), gera o PDF
 			if (result.canDownloadCert) {
 				await triggerCertDownload();
@@ -87,6 +92,8 @@
 				config: certConfig,
 				participantName: name.trim(),
 				participantCpf: cpf.trim() || undefined,
+				organizerName: data.event.organizer_name,
+				organizerCpf: data.event.organizer_cpf,
 				eventTitle: data.event.title
 			});
 		} catch (err) {
