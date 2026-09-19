@@ -36,13 +36,15 @@
 				<span class="text-xs text-[#a1a1aa] hidden md:inline font-mono">
 					{admin.email}
 				</span>
-				<a
-					href="/admin/logout"
-					class="flex items-center space-x-1 text-xs uppercase tracking-wider text-[#71717a] hover:text-red-700 transition-colors"
-				>
-					<img src="/icons/icon_door.png" alt="" class="w-3.5 h-3.5 object-contain opacity-70" />
-					<span>Sair</span>
-				</a>
+				<form method="POST" action="/admin/logout" class="inline flex items-center" data-sveltekit-reload>
+					<button
+						type="submit"
+						class="flex items-center space-x-1 text-xs uppercase tracking-wider text-[#71717a] hover:text-red-700 transition-colors cursor-pointer"
+					>
+						<img src="/icons/icon_door.png" alt="" class="w-3.5 h-3.5 object-contain opacity-70" />
+						<span>Sair</span>
+					</button>
+				</form>
 			{:else}
 				<a
 					href="/politica-de-privacidade"
