@@ -3,7 +3,6 @@
  * se o texto em cima dela deve ser claro (#ffffff) ou escuro (#18181b).
  */
 export function getContrastTextColor(hexColor: string): '#ffffff' | '#18181b' {
-	// Normaliza formato hex (#fff -> #ffffff)
 	let hex = hexColor.replace('#', '').trim();
 	if (hex.length === 3) {
 		hex = hex
@@ -26,19 +25,29 @@ export function getContrastTextColor(hexColor: string): '#ffffff' | '#18181b' {
 
 	const lum = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
 
-	// Se luminância > 0.4, fundo é claro, use texto escuro; senão, fundo escuro, use texto branco
 	return lum > 0.4 ? '#18181b' : '#ffffff';
 }
 
 /**
- * Paleta editorial de sugestões de cores temáticas com sobriedade
+ * Paleta editorial expandida: tonalidades vibrantes, expressivas e de alto contraste
  */
 export const EDITORIAL_THEMES = [
-	{ name: 'Grafite Editorial', hex: '#3f3f46' },
-	{ name: 'Azul Real', hex: '#1e3a8a' },
-	{ name: 'Verde Esmeralda', hex: '#065f46' },
-	{ name: 'Borgonha', hex: '#831843' },
-	{ name: 'Terracota', hex: '#9a3412' },
-	{ name: 'Índigo Profundo', hex: '#312e81' },
-	{ name: 'Âmbar Nobre', hex: '#78350f' }
+	{ name: 'Azul Cobalto', hex: '#2563eb' },
+	{ name: 'Índigo Elétrico', hex: '#4f46e5' },
+	{ name: 'Violeta Imperial', hex: '#7c3aed' },
+	{ name: 'Roxo Púrpura', hex: '#9333ea' },
+	{ name: 'Carmesim Rubi', hex: '#e11d48' },
+	{ name: 'Vermelho Nobre', hex: '#dc2626' },
+	{ name: 'Borgonha Intenso', hex: '#9f1239' },
+	{ name: 'Rosa Choque', hex: '#db2777' },
+	{ name: 'Laranja Solar', hex: '#ea580c' },
+	{ name: 'Terracota Queimado', hex: '#c2410c' },
+	{ name: 'Âmbar Dourado', hex: '#d97706' },
+	{ name: 'Esmeralda Vibrante', hex: '#059669' },
+	{ name: 'Verde Floresta', hex: '#16a34a' },
+	{ name: 'Verde Oliva Vivo', hex: '#65a30d' },
+	{ name: 'Verde Petróleo', hex: '#0d9488' },
+	{ name: 'Ciano Oceano', hex: '#0284c7' },
+	{ name: 'Azul Meia-Noite', hex: '#1e293b' },
+	{ name: 'Grafite Editorial', hex: '#27272a' }
 ];
