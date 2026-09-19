@@ -3,6 +3,10 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
+[vars]
+NODE_VERSION = "24"
+PUBLIC_APP_URL = "https://vellum.lucasangelo.dev/"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "vellum-db"

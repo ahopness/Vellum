@@ -1,5 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { env } from '$env/dynamic/private';
 import { getDb, type VellumEvent, type VellumAttendance } from '$lib/server/db';
 
 export const load: PageServerLoad = async ({ params, locals, platform, url }) => {
@@ -27,7 +28,8 @@ export const load: PageServerLoad = async ({ params, locals, platform, url }) =>
 		.all<VellumAttendance>();
 
 	const attendances = attendancesResult.results || [];
-	const publicUrl = `${platform?.env?.PUBLIC_APP_URL || url.origin}/e/${event.id}`;
+	const rawBase = env.PUBLIC_APP_URL || platform?.env?.PUBLIC_APP_URL || url.origin;
+	const publicUrl = `${rawBase.replace(/\/$/, '')}/e/${event.id}`;
 
 	return {
 		event,
