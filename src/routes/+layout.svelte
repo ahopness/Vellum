@@ -104,8 +104,8 @@
 					Ao excluir sua conta (<span class="font-mono font-medium text-[#18181b]">{data.admin.email}</span>):
 				</p>
 				<ul class="list-disc pl-5 space-y-1 text-xs text-[#52525b]">
-					<li>Todos os eventos criados por você serão excluídos do banco de dados (D1).</li>
-					<li>Todos os logotipos e modelos de certificados salvos no armazenamento (R2) serão deletados.</li>
+					<li>Todos os eventos criados por você serão excluídos do banco de dados.</li>
+					<li>Todos os logotipos e modelos de certificados salvos no armazenamento serão deletados.</li>
 					<li>Todo o histórico de presenças e credenciamentos associados aos seus eventos será removido.</li>
 					<li>Seus links de acesso e dados cadastrais serão permanentemente apagados.</li>
 				</ul>
