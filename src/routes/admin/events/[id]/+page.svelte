@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { formatDateTime, formatTime, getAttendanceWindow } from '$lib/utils/formatters';
 	import { downloadCertificatePdf, type CertConfig } from '$lib/utils/certificate';
 	import QrDisplay from '$lib/components/QrDisplay.svelte';
@@ -7,6 +8,7 @@
 
 	let searchQuery = $state('');
 	let isGeneratingTestCert = $state(false);
+	let isDeleting = $state(false);
 
 	const windowStatus = $derived(getAttendanceWindow(data.event.starts_at, data.event.ends_at));
 
@@ -45,16 +47,45 @@
 	class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 space-y-12"
 	style="--event-theme: {data.event.theme_color};"
 >
-	<!-- Cabeçalho do Evento com Fita Editorial e Logo -->
+	<!-- Cabeçalho do Evento com Fita Editorial, Logo e Ação de Exclusão -->
 	<header class="space-y-4 border-b border-[#18181b] pb-6">
-		<div class="flex items-center justify-between">
+		<div class="flex flex-wrap items-center justify-between gap-3">
 			<a href="/admin" class="text-xs uppercase font-mono text-[#71717a] hover:text-[#18181b]">
 				← Voltar aos Eventos
 			</a>
 
-			<div class="flex items-center space-x-2">
-				<span class="w-3 h-3 rounded-xs" style="background-color: var(--event-theme);"></span>
-				<span class="text-xs font-mono text-[#71717a]">Tema: {data.event.theme_color}</span>
+			<div class="flex items-center space-x-4">
+				<div class="flex items-center space-x-2">
+					<span class="w-3 h-3 rounded-xs" style="background-color: var(--event-theme);"></span>
+					<span class="text-xs font-mono text-[#71717a]">Tema: {data.event.theme_color}</span>
+				</div>
+
+				<!-- Botão Rápido de Excluir Evento no Topo -->
+				<form
+					method="POST"
+					action="?/delete"
+					use:enhance={({ cancel }) => {
+						const ok = confirm(
+							'Atenção: Ao excluir este evento, todas as presenças registradas no D1 e os arquivos no R2 (logo e certificado) serão removidos permanentemente. Deseja continuar?'
+						);
+						if (!ok) return cancel();
+						isDeleting = true;
+					}}
+				>
+					<button
+						type="submit"
+						disabled={isDeleting}
+						class="inline-flex items-center space-x-1.5 px-3 py-1 text-xs uppercase tracking-wider font-mono text-red-700 hover:text-red-900 border border-red-200 hover:border-red-400 bg-red-50/60 transition-colors disabled:opacity-50"
+					>
+						{#if isDeleting}
+							<img src="/icons/icon_loading.gif" alt="" class="w-3 h-3" />
+							<span>Excluindo...</span>
+						{:else}
+							<img src="/icons/icon_eraser.png" alt="" class="w-3 h-3 object-contain" />
+							<span>Excluir Evento</span>
+						{/if}
+					</button>
+				</form>
 			</div>
 		</div>
 
@@ -245,5 +276,46 @@
 				</table>
 			</div>
 		{/if}
+	</section>
+
+	<!-- Seção de Encerramento e Exclusão do Evento (Limpeza no D1 e R2) -->
+	<section class="pt-8 border-t border-[#e4e4e7] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+		<div class="space-y-1">
+			<div class="flex items-center space-x-2">
+				<img src="/icons/icon_eraser.png" alt="" class="w-4 h-4 object-contain" />
+				<h3 class="font-serif text-base font-medium text-red-900">
+					Excluir Evento
+				</h3>
+			</div>
+			<p class="text-xs text-[#71717a] font-sans max-w-md">
+				Remove definitivamente este evento e toda a lista de presenças do Cloudflare D1, e apaga os arquivos de logo e template vinculados no Cloudflare R2.
+			</p>
+		</div>
+
+		<form
+			method="POST"
+			action="?/delete"
+			use:enhance={({ cancel }) => {
+				const ok = confirm(
+					'Atenção: Ao excluir este evento, todas as presenças registradas no D1 e os arquivos no R2 serão removidos permanentemente. Deseja continuar?'
+				);
+				if (!ok) return cancel();
+				isDeleting = true;
+			}}
+		>
+			<button
+				type="submit"
+				disabled={isDeleting}
+				class="inline-flex items-center space-x-2 h-10 px-4 text-xs uppercase tracking-wider font-medium font-mono text-red-700 border border-red-300 bg-white hover:bg-red-700 hover:text-white transition-colors disabled:opacity-50"
+			>
+				{#if isDeleting}
+					<img src="/icons/icon_loading.gif" alt="" class="w-3.5 h-3.5" />
+					<span>Excluindo do D1 e R2...</span>
+				{:else}
+					<img src="/icons/icon_eraser.png" alt="" class="w-3.5 h-3.5 object-contain" />
+					<span>Excluir Permanentemente</span>
+				{/if}
+			</button>
+		</form>
 	</section>
 </div>

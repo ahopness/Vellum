@@ -1,4 +1,4 @@
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { writeFileSync, readFileSync, unlinkSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 
 /**
@@ -58,7 +58,6 @@ export async function getFromStorage(
 	}
 
 	const fileBuffer = readFileSync(filePath);
-	// Detecção simples de mime type
 	let contentType = 'application/octet-stream';
 	if (key.endsWith('.png')) contentType = 'image/png';
 	else if (key.endsWith('.jpg') || key.endsWith('.jpeg')) contentType = 'image/jpeg';
@@ -67,4 +66,44 @@ export async function getFromStorage(
 	else if (key.endsWith('.pdf')) contentType = 'application/pdf';
 
 	return { buffer: fileBuffer, contentType };
+}
+
+/**
+ * Extrai a chave de armazenamento a partir de uma URL gerenciada (/api/files/{key})
+ */
+export function extractStorageKey(urlOrPath: string | null | undefined): string | null {
+	if (!urlOrPath) return null;
+	const prefix = '/api/files/';
+	if (urlOrPath.startsWith(prefix)) {
+		return urlOrPath.slice(prefix.length);
+	}
+	return null;
+}
+
+/**
+ * Exclui um arquivo do Cloudflare R2 ou do armazenamento local.
+ */
+export async function deleteFromStorage(
+	platform: App.Platform | undefined,
+	key: string
+): Promise<boolean> {
+	if (!key) return false;
+
+	try {
+		if (platform?.env?.R2) {
+			await platform.env.R2.delete(key);
+			return true;
+		}
+
+		// Fallback local
+		const filePath = resolve(process.cwd(), '.data/storage', key);
+		if (existsSync(filePath)) {
+			unlinkSync(filePath);
+			return true;
+		}
+		return false;
+	} catch (err) {
+		console.error(`Erro ao excluir arquivo ${key} do armazenamento:`, err);
+		return false;
+	}
 }

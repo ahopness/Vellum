@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { formatDateTime, getAttendanceWindow } from '$lib/utils/formatters';
 
 	let { data } = $props();
@@ -140,7 +141,7 @@
 							</td>
 
 							<!-- Ações -->
-							<td class="py-4 pl-4 text-right whitespace-nowrap space-x-3 text-xs uppercase tracking-wider font-mono">
+							<td class="py-4 pl-4 text-right whitespace-nowrap space-x-2.5 text-xs uppercase tracking-wider font-mono">
 								<a
 									href="/admin/events/{event.id}"
 									class="text-[#18181b] hover:underline underline-offset-2 font-medium"
@@ -156,6 +157,24 @@
 								>
 									Página Pública ↗
 								</a>
+								<span class="text-[#d4d4d8]">|</span>
+								<form
+									method="POST"
+									action="?/delete"
+									class="inline-block"
+									use:enhance={({ cancel }) => {
+										const ok = confirm(`Excluir permanentemente o evento "${event.title}" e remover todos os dados vinculados do D1 e R2?`);
+										if (!ok) return cancel();
+									}}
+								>
+									<input type="hidden" name="eventId" value={event.id} />
+									<button
+										type="submit"
+										class="text-red-600 hover:text-red-800 hover:underline underline-offset-2 transition-colors cursor-pointer"
+									>
+										Excluir
+									</button>
+								</form>
 							</td>
 						</tr>
 					{/each}
