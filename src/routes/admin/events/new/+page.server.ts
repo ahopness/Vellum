@@ -26,8 +26,20 @@ export const actions: Actions = {
 			return fail(400, { error: 'As datas de início e término são obrigatórias.' });
 		}
 
-		const startsAt = new Date(startsAtRaw).toISOString();
-		const endsAt = new Date(endsAtRaw).toISOString();
+		const tzOffsetRaw = formData.get('tz_offset')?.toString();
+		// Deslocamento padrão para Horário de Brasília (UTC-3 = 180 min) se não informado
+		const tzOffset = tzOffsetRaw !== undefined && tzOffsetRaw !== '' ? parseInt(tzOffsetRaw, 10) : 180;
+
+		function parseDateTimeToUtc(raw: string, offsetMinutes: number): string {
+			if (raw.endsWith('Z') || raw.includes('+') || (raw.length > 19 && raw.includes('-'))) {
+				return new Date(raw).toISOString();
+			}
+			const dateParsed = new Date(raw);
+			return new Date(dateParsed.getTime() + offsetMinutes * 60 * 1000).toISOString();
+		}
+
+		const startsAt = parseDateTimeToUtc(startsAtRaw, tzOffset);
+		const endsAt = parseDateTimeToUtc(endsAtRaw, tzOffset);
 
 		if (new Date(endsAt).getTime() <= new Date(startsAt).getTime()) {
 			return fail(400, { error: 'O término do evento deve ser posterior ao horário de início.' });
