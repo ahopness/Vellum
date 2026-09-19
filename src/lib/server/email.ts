@@ -1,14 +1,43 @@
+import { env } from '$env/dynamic/private';
+
+/**
+ * Obtém a chave do Resend buscando em todas as fontes possíveis:
+ * - SvelteKit $env/dynamic/private (lê de .env em dev e do Cloudflare Pages em prod)
+ * - platform.env (contexto de runtime do Cloudflare)
+ * - process.env (variáveis de ambiente do sistema/Node)
+ */
+export function getResendApiKey(platform?: App.Platform): string | undefined {
+	return (
+		env.RESEND_API_KEY ||
+		platform?.env?.RESEND_API_KEY ||
+		(typeof process !== 'undefined' ? process.env?.RESEND_API_KEY : undefined)
+	);
+}
+
+/**
+ * Obtém o remetente configurado ou usa o domínio padrão gratuito do Resend (onboarding@resend.dev)
+ */
+export function getResendFromEmail(platform?: App.Platform): string {
+	return (
+		env.RESEND_FROM_EMAIL ||
+		(platform?.env as any)?.RESEND_FROM_EMAIL ||
+		(typeof process !== 'undefined' ? process.env?.RESEND_FROM_EMAIL : undefined) ||
+		'Vellum <onboarding@resend.dev>'
+	);
+}
+
 /**
  * Disparo transacional de e-mails usando a API nativa do Resend via fetch.
- * Se nenhuma chave RESEND_API_KEY for fornecida, exibe o link no console (ideal para dev local).
+ * Se nenhuma chave for encontrada, opera em modo desenvolvimento logando no terminal.
  */
 export async function sendMagicLinkEmail(params: {
 	to: string;
 	url: string;
 	adminName?: string;
 	apiKey?: string;
+	fromEmail?: string;
 }): Promise<{ success: boolean; error?: string; devUrl?: string }> {
-	const { to, url, adminName, apiKey } = params;
+	const { to, url, adminName, apiKey, fromEmail = 'Vellum <onboarding@resend.dev>' } = params;
 
 	// Se não houver chave do Resend configurada, roda no modo desenvolvimento
 	if (!apiKey) {
@@ -16,6 +45,7 @@ export async function sendMagicLinkEmail(params: {
 		console.log(`Para: ${to} (${adminName || 'Organizador'})`);
 		console.log(`Link de Acesso: ${url}`);
 		console.log('Validade: 15 minutos (uso único)');
+		console.log('Aviso: RESEND_API_KEY não foi detectada. Operando em modo de desenvolvimento.');
 		console.log('=====================================================\n');
 		return { success: true, devUrl: url };
 	}
@@ -24,11 +54,11 @@ export async function sendMagicLinkEmail(params: {
 		const response = await fetch('https://api.resend.com/emails', {
 			method: 'POST',
 			headers: {
-				Authorization: `Bearer ${apiKey}`,
+				Authorization: `Bearer ${apiKey.trim()}`,
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				from: 'Vellum <login@vellum.app>',
+				from: fromEmail,
 				to: [to],
 				subject: 'Seu link de acesso ao Vellum',
 				html: `
@@ -58,7 +88,7 @@ export async function sendMagicLinkEmail(params: {
 		if (!response.ok) {
 			const errorData = await response.text();
 			console.error('Falha ao enviar e-mail via Resend:', errorData);
-			return { success: false, error: errorData };
+			return { success: false, error: `Erro do Resend: ${errorData}` };
 		}
 
 		return { success: true };

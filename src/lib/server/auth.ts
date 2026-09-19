@@ -12,17 +12,6 @@ function bufferToHex(buffer: ArrayBuffer): string {
 }
 
 /**
- * Converte string hexadecimal para Uint8Array.
- */
-function hexToBuffer(hex: string): Uint8Array {
-	const bytes = new Uint8Array(hex.length / 2);
-	for (let i = 0; i < bytes.length; i++) {
-		bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
-	}
-	return bytes;
-}
-
-/**
  * Gera um hash SHA-256 de uma string usando Web Crypto.
  */
 export async function sha256(text: string): Promise<string> {
@@ -99,42 +88,58 @@ export async function verifySessionToken(token: string, secret?: string): Promis
 }
 
 /**
- * Cria ou busca um admin e gera um Magic Link válido por 15 minutos.
+ * Busca administrador por e-mail no banco de dados.
  */
-export async function createMagicLink(
+export async function getAdminByEmail(
 	db: DatabaseClient,
-	email: string,
-	name?: string,
-	cpf?: string
-): Promise<{ rawToken: string; admin: VellumAdmin }> {
+	email: string
+): Promise<VellumAdmin | null> {
 	const normalizedEmail = email.trim().toLowerCase();
-
-	// Verifica se o admin já existe
-	let admin = await db
+	return await db
 		.prepare('SELECT * FROM admins WHERE email = ?')
 		.bind(normalizedEmail)
 		.first<VellumAdmin>();
+}
 
-	if (!admin) {
-		const newAdminId = crypto.randomUUID();
-		const adminName = name?.trim() || 'Organizador Vellum';
-		const adminCpf = cpf?.trim() || '000.000.000-00';
-
-		await db
-			.prepare('INSERT INTO admins (id, name, email, cpf) VALUES (?, ?, ?, ?)')
-			.bind(newAdminId, adminName, normalizedEmail, adminCpf)
-			.run();
-
-		admin = {
-			id: newAdminId,
-			name: adminName,
-			email: normalizedEmail,
-			cpf: adminCpf,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		};
+/**
+ * Cadastra um novo administrador no sistema (requer Nome, Email e CPF).
+ */
+export async function registerAdmin(
+	db: DatabaseClient,
+	data: { name: string; email: string; cpf: string }
+): Promise<VellumAdmin> {
+	const normalizedEmail = data.email.trim().toLowerCase();
+	const existing = await getAdminByEmail(db, normalizedEmail);
+	if (existing) {
+		throw new Error('Este e-mail já está cadastrado.');
 	}
 
+	const newAdminId = crypto.randomUUID();
+	const adminName = data.name.trim();
+	const adminCpf = data.cpf.trim();
+
+	await db
+		.prepare('INSERT INTO admins (id, name, email, cpf) VALUES (?, ?, ?, ?)')
+		.bind(newAdminId, adminName, normalizedEmail, adminCpf)
+		.run();
+
+	return {
+		id: newAdminId,
+		name: adminName,
+		email: normalizedEmail,
+		cpf: adminCpf,
+		created_at: new Date().toISOString(),
+		updated_at: new Date().toISOString()
+	};
+}
+
+/**
+ * Gera um Magic Link seguro de 15 minutos para um administrador cadastrado.
+ */
+export async function createMagicLinkForAdmin(
+	db: DatabaseClient,
+	adminId: string
+): Promise<{ rawToken: string }> {
 	const rawToken = generateRandomToken();
 	const tokenHash = await sha256(rawToken);
 	const linkId = crypto.randomUUID();
@@ -144,10 +149,10 @@ export async function createMagicLink(
 		.prepare(
 			'INSERT INTO magic_links (id, admin_id, token_hash, expires_at) VALUES (?, ?, ?, ?)'
 		)
-		.bind(linkId, admin.id, tokenHash, expiresAt)
+		.bind(linkId, adminId, tokenHash, expiresAt)
 		.run();
 
-	return { rawToken, admin };
+	return { rawToken };
 }
 
 /**
