@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 	const db = getDb(platform);
 	const event = await db
 		.prepare(
-			`SELECT id, title, description, starts_at, ends_at, theme_color,
+			`SELECT id, title, description, logo_url, starts_at, ends_at, theme_color,
 			 cert_template_url, cert_config FROM events WHERE id = ?`
 		)
 		.bind(params.id)

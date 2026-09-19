@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { getDb } from '$lib/server/db';
+import { uploadToStorage } from '$lib/server/storage';
 
 export const actions: Actions = {
 	default: async ({ request, locals, platform }) => {
@@ -12,7 +13,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const title = formData.get('title')?.toString().trim();
 		const description = formData.get('description')?.toString().trim() || null;
-		const themeColor = formData.get('theme_color')?.toString().trim() || '#3f3f46';
+		const themeColor = formData.get('theme_color')?.toString().trim() || '#2563eb';
 		const startsAtRaw = formData.get('starts_at')?.toString();
 		const endsAtRaw = formData.get('ends_at')?.toString();
 		const certTemplateUrl = formData.get('cert_template_url')?.toString().trim() || '';
@@ -43,8 +44,41 @@ export const actions: Actions = {
 			});
 		}
 
-		const eventId = crypto.randomUUID().slice(0, 8); // Identificador curto elegante
+		const eventId = crypto.randomUUID().slice(0, 8);
 		const db = getDb(platform);
+
+		// Processa upload de Logo no Cloudflare R2
+		let logoUrl: string | null = null;
+		const logoFile = formData.get('logo') as File | null;
+		if (logoFile && logoFile.size > 0) {
+			try {
+				const buffer = await logoFile.arrayBuffer();
+				const ext = logoFile.name.split('.').pop()?.toLowerCase() || 'png';
+				const key = `logos/${eventId}-${Date.now()}.${ext}`;
+				logoUrl = await uploadToStorage(platform, key, new Uint8Array(buffer), logoFile.type || 'image/png');
+			} catch (err) {
+				console.error('Falha ao fazer upload da logo no R2:', err);
+			}
+		}
+
+		// Processa template do certificado no Cloudflare R2 se enviado como arquivo
+		let finalCertTemplateUrl = certTemplateUrl;
+		const templateFile = formData.get('template_file') as File | null;
+		if (templateFile && templateFile.size > 0) {
+			try {
+				const buffer = await templateFile.arrayBuffer();
+				const ext = templateFile.name.split('.').pop()?.toLowerCase() || 'png';
+				const key = `templates/${eventId}-${Date.now()}.${ext}`;
+				finalCertTemplateUrl = await uploadToStorage(
+					platform,
+					key,
+					new Uint8Array(buffer),
+					templateFile.type || 'image/png'
+				);
+			} catch (err) {
+				console.error('Falha ao fazer upload do template no R2:', err);
+			}
+		}
 
 		try {
 			await db
@@ -59,11 +93,11 @@ export const actions: Actions = {
 					admin.id,
 					title,
 					description,
-					null,
+					logoUrl,
 					themeColor,
 					startsAt,
 					endsAt,
-					certTemplateUrl,
+					finalCertTemplateUrl,
 					certConfig
 				)
 				.run();
