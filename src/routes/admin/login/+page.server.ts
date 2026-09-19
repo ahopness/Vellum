@@ -150,6 +150,16 @@ export const actions: Actions = {
 				fromEmail
 			});
 
+			if (!emailResult.success && !emailResult.devUrl) {
+				return fail(500, {
+					mode: 'register',
+					email,
+					name,
+					cpf,
+					error: emailResult.error || 'Falha ao enviar e-mail com link de acesso.'
+				});
+			}
+
 			return {
 				success: true,
 				isNewRegistration: true,

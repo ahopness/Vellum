@@ -1,5 +1,7 @@
 import { env } from '$env/dynamic/private';
 
+export const DEFAULT_RESEND_FROM_EMAIL = 'Vellum <auth@vellum.lucasangelo.dev>';
+
 /**
  * Obtém a chave do Resend buscando em todas as fontes possíveis:
  * - SvelteKit $env/dynamic/private (lê de .env em dev e do Cloudflare Pages em prod)
@@ -15,14 +17,14 @@ export function getResendApiKey(platform?: App.Platform): string | undefined {
 }
 
 /**
- * Obtém o remetente configurado ou usa o domínio padrão gratuito do Resend (onboarding@resend.dev)
+ * Obtém o remetente configurado ou usa o domínio próprio (auth@vellum.lucasangelo.dev)
  */
 export function getResendFromEmail(platform?: App.Platform): string {
 	return (
 		env.RESEND_FROM_EMAIL ||
 		(platform?.env as any)?.RESEND_FROM_EMAIL ||
 		(typeof process !== 'undefined' ? process.env?.RESEND_FROM_EMAIL : undefined) ||
-		'Vellum <onboarding@resend.dev>'
+		DEFAULT_RESEND_FROM_EMAIL
 	);
 }
 
@@ -37,7 +39,7 @@ export async function sendMagicLinkEmail(params: {
 	apiKey?: string;
 	fromEmail?: string;
 }): Promise<{ success: boolean; error?: string; devUrl?: string }> {
-	const { to, url, adminName, apiKey, fromEmail = 'Vellum <onboarding@resend.dev>' } = params;
+	const { to, url, adminName, apiKey, fromEmail = DEFAULT_RESEND_FROM_EMAIL } = params;
 
 	// Se não houver chave do Resend configurada, roda no modo desenvolvimento
 	if (!apiKey) {

@@ -6,6 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 NODE_VERSION = "24"
 PUBLIC_APP_URL = "https://vellum.lucasangelo.dev/"
+RESEND_FROM_EMAIL = "Vellum <noreply@vellum.lucasangelo.dev>"
 
 [[d1_databases]]
 binding = "DB"

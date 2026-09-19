@@ -19,6 +19,7 @@ declare global {
 				DB: D1Database;
 				R2: R2Bucket;
 				RESEND_API_KEY?: string;
+				RESEND_FROM_EMAIL?: string;
 				SESSION_SECRET?: string;
 				PUBLIC_APP_URL?: string;
 			};
