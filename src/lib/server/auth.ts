@@ -1,4 +1,5 @@
-import type { DatabaseClient, VellumAdmin } from './db';
+import type { DatabaseClient, VellumAdmin, VellumEvent } from './db';
+import { extractStorageKey, deleteFromStorage } from './storage';
 
 const DEV_SESSION_SECRET = 'vellum-dev-session-secret-key-32-chars-long!';
 
@@ -194,3 +195,53 @@ export async function verifyAndConsumeMagicLink(
 
 	return admin || null;
 }
+
+/**
+ * Exclui permanentemente uma conta de administrador e propaga em cascata
+ * por todos os seus eventos, arquivos no R2, presenças e magic links no D1.
+ * CUIDADO: Operação estritamente delimitada pelo adminId fornecido.
+ */
+export async function deleteAdminAccount(
+	db: DatabaseClient,
+	platform: App.Platform | undefined,
+	adminId: string
+): Promise<{ success: boolean; eventsDeleted: number }> {
+	if (!adminId || typeof adminId !== 'string') {
+		throw new Error('ID de administrador inválido para exclusão.');
+	}
+
+	// 1. Busca todos os eventos pertencentes EXCLUSIVAMENTE a este administrador
+	const eventsResult = await db
+		.prepare('SELECT id, logo_url, cert_template_url FROM events WHERE admin_id = ?')
+		.bind(adminId)
+		.all<Pick<VellumEvent, 'id' | 'logo_url' | 'cert_template_url'>>();
+
+	const events = eventsResult.results || [];
+
+	// 2. Limpa todos os arquivos do R2 (logos e templates de certificados) vinculados a esses eventos
+	for (const ev of events) {
+		const logoKey = extractStorageKey(ev.logo_url);
+		if (logoKey) {
+			await deleteFromStorage(platform, logoKey);
+		}
+		const templateKey = extractStorageKey(ev.cert_template_url);
+		if (templateKey) {
+			await deleteFromStorage(platform, templateKey);
+		}
+
+		// 3. Exclui as presenças deste evento no D1
+		await db.prepare('DELETE FROM attendances WHERE event_id = ?').bind(ev.id).run();
+	}
+
+	// 4. Exclui os eventos deste administrador no D1
+	await db.prepare('DELETE FROM events WHERE admin_id = ?').bind(adminId).run();
+
+	// 5. Exclui os magic links deste administrador no D1
+	await db.prepare('DELETE FROM magic_links WHERE admin_id = ?').bind(adminId).run();
+
+	// 6. Exclui o registro do administrador no D1
+	await db.prepare('DELETE FROM admins WHERE id = ?').bind(adminId).run();
+
+	return { success: true, eventsDeleted: events.length };
+}
+

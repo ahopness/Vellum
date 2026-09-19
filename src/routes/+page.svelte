@@ -1,8 +1,20 @@
 <script lang="ts">
+	import { page } from '$app/state';
+
 	let { data } = $props();
 </script>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-16">
+	{#if page.url.searchParams.get('account_deleted')}
+		<div class="border border-red-200 bg-red-50 p-4 text-xs font-mono text-red-900 flex items-center justify-between">
+			<div class="flex items-center space-x-2">
+				<span>✓</span>
+				<span>Sua conta de organizador e todos os eventos, arquivos e dados associados foram excluídos definitivamente.</span>
+			</div>
+			<a href="/" class="text-red-700 hover:text-red-950 font-bold ml-4">✕</a>
+		</div>
+	{/if}
+
 	<!-- Hero Section Editorial -->
 	<section class="space-y-6">
 		<h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-[#18181b] leading-[1.12]">
