@@ -1,10 +1,11 @@
 <div align="center">
-  <p><h2>Vellum: Sistema Editorial de Presença & Certificados</h2></p>
-  <p><h3>Plataforma de credenciamento, emissão de certificados e gestão de eventos.</h3></p>
-  <!-- Adicionar logo posteriormente -->
+  <p><h2>Vellum</h2></p>
+  <p><h3>Sua solução para publicação & credenciamento acadêmico.</h3></p>
   <img width="256" height="256" alt="logo" src="https://github.com/user-attachments/assets/b4b19ced-37bf-4b95-905f-26d48a8eeeda" />
   <br><br>
 </div>
+
+**TRIVIA**: Eu fiz esse app a pedido pessoal da minha mãe, ela ia fazer uma palestra pros servidores da área da saúde da nossa cidade mas estava sem uma forma fácil e rápida de emitir a lista de presença e os certificados da palestra, então coloquei as mãos a obra e montei o Vellum e + ou - 4 horas usando o Gemini 3.8. A modelagem de dados, as escolhas técnicas, o DevOps e o QA ficaram por minha conta mas o código em si ficou por conta da LLM, um dia eu devo refazer esse app eu mesmo escrevendo o código na mão, mas por enquanto o site ta funcionando perfeitamente e sem gastar um tostão sequer (obrigado cloudflare, obrigado resend).
 
 ## Screenshots
 <div align="center">
