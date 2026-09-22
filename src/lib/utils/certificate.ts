@@ -7,6 +7,7 @@ export interface FieldConfig {
 	font_family?: string;
 	color?: string; // Hex (ex: #111827)
 	align?: 'left' | 'center' | 'right';
+	enabled?: boolean; // Se o campo deve ser impresso no certificado
 }
 
 export interface CertConfig {
@@ -182,28 +183,28 @@ export async function generateCertificatePdf(params: {
 	};
 
 	// 1. Nome do Participante
-	if (config.name_field && participantName) {
+	if (config.name_field && config.name_field.enabled !== false && participantName) {
 		drawTextField(participantName, config.name_field, fontBold);
 	}
 
 	// 2. CPF do Participante
-	if (config.cpf_field && participantCpf) {
+	if (config.cpf_field && config.cpf_field.enabled !== false && participantCpf) {
 		const cpfLabel = participantCpf.startsWith('CPF') ? participantCpf : `CPF: ${participantCpf}`;
 		drawTextField(cpfLabel, config.cpf_field, fontRegular);
 	}
 
 	// 3. Data de Emissão
-	if (config.date_field && issueDate) {
+	if (config.date_field && config.date_field.enabled !== false && issueDate) {
 		drawTextField(issueDate, config.date_field, fontRegular);
 	}
 
 	// 4. Nome do Organizador
-	if (config.organizer_name_field && organizerName) {
+	if (config.organizer_name_field && config.organizer_name_field.enabled !== false && organizerName) {
 		drawTextField(organizerName, config.organizer_name_field, fontBold);
 	}
 
 	// 5. CPF do Organizador
-	if (config.organizer_cpf_field && organizerCpf) {
+	if (config.organizer_cpf_field && config.organizer_cpf_field.enabled !== false && organizerCpf) {
 		const cpfLabel = organizerCpf.startsWith('CPF') ? organizerCpf : `CPF: ${organizerCpf}`;
 		drawTextField(cpfLabel, config.organizer_cpf_field, fontRegular);
 	}

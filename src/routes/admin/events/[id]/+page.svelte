@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { formatDateTime, formatTime, getAttendanceWindow } from '$lib/utils/formatters';
+	import { formatDate, formatDateTime, formatTime, getAttendanceWindow } from '$lib/utils/formatters';
 	import { downloadCertificatePdf, type CertConfig } from '$lib/utils/certificate';
 	import QrDisplay from '$lib/components/QrDisplay.svelte';
 
@@ -267,7 +267,7 @@
 						<tr class="border-b-2 border-[#18181b] text-[11px] uppercase tracking-wider font-mono text-[#71717a]">
 							<th class="py-2.5 pr-4 font-medium">Nome do Participante</th>
 							<th class="py-2.5 px-4 font-medium">E-mail</th>
-							<th class="py-2.5 pl-4 font-medium text-right">Horário</th>
+							<th class="py-2.5 pl-4 font-medium text-right">Data e Hora de Registro</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-[#e4e4e7] font-sans text-sm">
@@ -279,8 +279,9 @@
 								<td class="py-3 px-4 font-mono text-xs text-[#52525b]">
 									{attendance.participant_email}
 								</td>
-								<td class="py-3 pl-4 font-mono text-xs text-[#71717a] text-right whitespace-nowrap">
-									{formatTime(attendance.checked_in_at)}
+								<td class="py-3 pl-4 font-mono text-xs text-right whitespace-nowrap">
+									<span class="text-[#71717a]">{formatDate(attendance.checked_in_at)}</span>
+									<span class="text-[#18181b] font-medium ml-1.5">{formatTime(attendance.checked_in_at, true)}</span>
 								</td>
 							</tr>
 						{/each}

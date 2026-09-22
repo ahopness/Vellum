@@ -1,3 +1,5 @@
+import { formatDate, formatTime } from '$lib/utils/formatters';
+
 /**
  * Sanitiza campos contra CSV Injection (quando aberto no Excel, LibreOffice, etc.).
  * Prefixos como =, +, -, @ podem disparar execução de fórmulas arbitrárias.
@@ -27,16 +29,16 @@ export function generateAttendanceCsv(
 ): string {
 	// BOM (Byte Order Mark) para UTF-8 garante que o Excel renderize acentos corretamente no Windows
 	const BOM = '\uFEFF';
-	const headers = ['NOME DO PARTICIPANTE', 'E-MAIL', 'DATA E HORA DO CREDENCIAMENTO'];
+	const headers = ['NOME DO PARTICIPANTE', 'E-MAIL', 'DATA DO REGISTRO', 'HORA DO REGISTRO'];
 	
 	const rows = attendances.map((item) => {
-		const formattedDate = new Date(item.checked_in_at).toLocaleString('pt-BR', {
-			timeZone: 'America/Sao_Paulo'
-		});
+		const dateStr = formatDate(item.checked_in_at);
+		const timeStr = formatTime(item.checked_in_at, true);
 		return [
 			sanitizeCsvField(item.participant_name),
 			sanitizeCsvField(item.participant_email),
-			sanitizeCsvField(formattedDate)
+			sanitizeCsvField(dateStr),
+			sanitizeCsvField(timeStr)
 		].join(';');
 	});
 

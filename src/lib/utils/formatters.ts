@@ -24,11 +24,30 @@ export function isValidCpfLength(val: string): boolean {
 }
 
 /**
+ * Faz o parse seguro de strings de data vindas do SQLite ou ISO 8601.
+ * Trata o formato padrão do SQLite "YYYY-MM-DD HH:MM:SS" adicionando 'T' e 'Z' (UTC).
+ */
+export function parseDateSafe(val: string | null | undefined): Date | null {
+	if (!val) return null;
+	const trimmed = val.trim();
+	if (!trimmed) return null;
+	// Formato comum do SQLite CURRENT_TIMESTAMP "YYYY-MM-DD HH:MM:SS"
+	if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(trimmed)) {
+		const iso = trimmed.replace(' ', 'T') + (trimmed.endsWith('Z') ? '' : 'Z');
+		const d = new Date(iso);
+		return isNaN(d.getTime()) ? null : d;
+	}
+	const d = new Date(trimmed);
+	return isNaN(d.getTime()) ? null : d;
+}
+
+/**
  * Formata data para o padrão pt-BR: DD/MM/AAAA
  */
 export function formatDate(isoString: string): string {
-	if (!isoString) return '';
-	return new Date(isoString).toLocaleDateString('pt-BR', {
+	const d = parseDateSafe(isoString);
+	if (!d) return '';
+	return d.toLocaleDateString('pt-BR', {
 		timeZone: 'America/Sao_Paulo',
 		day: '2-digit',
 		month: '2-digit',
@@ -37,23 +56,26 @@ export function formatDate(isoString: string): string {
 }
 
 /**
- * Formata horário para o padrão pt-BR: HH:mm
+ * Formata horário para o padrão pt-BR: HH:mm (ou HH:mm:ss se includeSeconds = true)
  */
-export function formatTime(isoString: string): string {
-	if (!isoString) return '';
-	return new Date(isoString).toLocaleTimeString('pt-BR', {
+export function formatTime(isoString: string, includeSeconds = false): string {
+	const d = parseDateSafe(isoString);
+	if (!d) return '';
+	return d.toLocaleTimeString('pt-BR', {
 		timeZone: 'America/Sao_Paulo',
 		hour: '2-digit',
-		minute: '2-digit'
+		minute: '2-digit',
+		...(includeSeconds ? { second: '2-digit' } : {})
 	});
 }
 
 /**
  * Formata data e hora para exibição editorial
  */
-export function formatDateTime(isoString: string): string {
-	if (!isoString) return '';
-	return `${formatDate(isoString)} às ${formatTime(isoString)}`;
+export function formatDateTime(isoString: string, includeSeconds = false): string {
+	const d = parseDateSafe(isoString);
+	if (!d) return '';
+	return `${formatDate(isoString)} às ${formatTime(isoString, includeSeconds)}`;
 }
 
 export type EventStatus = 'upcoming' | 'open' | 'ended';

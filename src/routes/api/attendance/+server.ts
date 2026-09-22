@@ -68,11 +68,12 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 		if (!existingAttendance) {
 			// Registra a presença (LGPD: APENAS NOME E EMAIL, NUNCA O CPF)
 			const attendanceId = crypto.randomUUID();
+			const checkedInAt = new Date().toISOString();
 			await db
 				.prepare(
-					'INSERT INTO attendances (id, event_id, participant_name, participant_email) VALUES (?, ?, ?, ?)'
+					'INSERT INTO attendances (id, event_id, participant_name, participant_email, checked_in_at) VALUES (?, ?, ?, ?, ?)'
 				)
-				.bind(attendanceId, eventId, name, email)
+				.bind(attendanceId, eventId, name, email, checkedInAt)
 				.run();
 		} else {
 			alreadyCheckedIn = true;
